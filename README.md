@@ -1,2 +1,2 @@
 # AROM
-Scrapping and classifying amazon product reviews as positive or negative reviews.
+Scrapping and classifying amazon user reviews as positive or negative, using sentiment analysis techniques.
