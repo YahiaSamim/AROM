@@ -9,6 +9,7 @@ class Scraper:
         """
             Default constructor
         """
+        
         pass
     
     def get_reviews_page(self, url):
