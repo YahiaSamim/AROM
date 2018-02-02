@@ -33,6 +33,7 @@ def get_reviews(url, scraper):
         reviews (list): list of all the scraped reviews
     """
     
+    scraper = Scraper()
     review_url = scraper.get_reviews_page(url)
     soup = scraper.get_soup(review_url)
     lastPage = scraper.get_last_page(soup)
@@ -56,7 +57,6 @@ def save_to_json(reviews):
 if __name__ == "__main__":
     asin = "B073QVY9PQ"
     url = "https://www.amazon.in/dp/" + asin
-    scraper = Scraper()
     reviews = get_reviews(url, scraper)
     save_to_json(reviews)
     
