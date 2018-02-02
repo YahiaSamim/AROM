@@ -11,6 +11,7 @@ def compile_reviews(review_text, review_stars):
     Returns:
         reviews (list): list of all the complied reviews
     """
+    
     reviews = list()
     for t,s in zip(review_text, review_stars):
         review_dict = dict()
@@ -25,7 +26,7 @@ def compile_reviews(review_text, review_stars):
         reviews.append(review_dict)
     return reviews
 
-def get_reviews(url, scraper):
+def get_reviews(url):
     """ Scrape reviews off each review page
     Args:
         url (str): url of the product page
@@ -50,6 +51,7 @@ def save_to_json(reviews):
     Args:
         reviews (list): list of all the scraped reviews
     """
+    
     with open ("data.json", "w") as jf:
         for review in reviews:
             json.dump(review, jf, sort_keys=True, indent=4)
@@ -57,7 +59,7 @@ def save_to_json(reviews):
 if __name__ == "__main__":
     asin = "B073QVY9PQ"
     url = "https://www.amazon.in/dp/" + asin
-    reviews = get_reviews(url, scraper)
+    reviews = get_reviews(url)
     save_to_json(reviews)
     
 
