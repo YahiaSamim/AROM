@@ -1,4 +1,5 @@
 
+import logging
 from Scraper import Scraper
 import json
 
@@ -13,17 +14,26 @@ def compile_reviews(review_text, review_stars):
     """
     
     reviews = list()
+    global neg_count
+    global pos_count
     for t,s in zip(review_text, review_stars):
         review_dict = dict()
         review_dict["text"] = t.text.encode("ascii","ignore").decode()
         review_dict["stars"] = int(s.text.encode("ascii","ignore").decode()[0])
         if review_dict["stars"] <= 2:
             review_dict["label"] = "negative"
+            neg_count += 1
+            if neg_count <= 50:
+                reviews.append(review_dict)
         elif review_dict["stars"] >= 4:
             review_dict["label"] = "positive"
+            pos_count += 1
+            if pos_count <= 50:
+                reviews.append(review_dict)
         else:
             continue
-        reviews.append(review_dict)
+    logging.info("neg_count = " + str(neg_count))
+    logging.info("pos_count = " + str(pos_count))
     return reviews
 
 def get_reviews(url):
@@ -39,7 +49,12 @@ def get_reviews(url):
     soup = scraper.get_soup(review_url)
     lastPage = scraper.get_last_page(soup)
     reviews = list()
+    global neg_count
+    global pos_count
     for i in range(1, lastPage + 1):
+        if neg_count >= 50 and pos_count >= 50:
+            return reviews
+        logging.info("Extracing from page " + str(i))
         soup = scraper.get_soup(review_url + "&pageNumber=" + str(i))
         review_stars = soup.find_all(attrs={"data-hook": "review-star-rating"})
         review_text = soup.find_all("span",'a-size-base review-text')
@@ -52,14 +67,18 @@ def save_to_json(reviews):
         reviews (list): list of all the scraped reviews
     """
     
-    with open ("data.json", "w") as jf:
+    with open ("data.json", "a") as jf:
         for review in reviews:
             json.dump(review, jf, sort_keys=True, indent=4)
 
-if __name__ == "__main__":
-    asin = "B073QVY9PQ"
-    url = "https://www.amazon.in/dp/" + asin
-    reviews = get_reviews(url)
-    save_to_json(reviews)
-    
 
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    asin_list = ["9352664167","B01M1FWOKU"]
+    for asin in asin_list:
+        url = "https://www.amazon.in/dp/" + asin
+        neg_count = 0
+        pos_count = 0
+        reviews = get_reviews(url)
+        save_to_json(reviews)
+        
